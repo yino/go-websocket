@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .left{
+            float: left;
+            width: 100px;
+        }
+        .right{
+            float: right;
+            width: 500px;
+        }
+    </style>
+</head>
+<body>
+<div style="overflow: hidden">
+    <div class="left">
+        <input type="text" id="msg">
+        <button id="send" onclick="send()">发送</button>
+        <button id="close" onclick="wsclose()" type="button">关闭</button>
+    </div>
+    <div class="right" id="msg-content">
+
+    </div>
+</div>
+<script>
+    var ws = new WebSocket("ws://localhost:8080/ws");
+
+    ws.onopen = function(evt) {
+        console.log("Connection open ...");
+        ws.send("Hello WebSockets!");
+    };
+
+    ws.onmessage = function(evt) {
+        console.log("Received Message: " + evt.data);
+        show("accept",  evt.data)
+        // ws.close();
+    };
+
+    ws.onclose = function(evt) {
+        console.log("Connection closed.");
+    };
+
+    function send(){
+        const msg = document.getElementById("msg").value;
+        ws.send(msg)
+        show("send", msg)
+    }
+
+    function show(type, msg){
+        const html = document.getElementById("msg-content").innerHTML
+        if (type == "send"){
+            document.getElementById("msg-content").innerHTML= html + "<p>send: "+msg+"</p>"
+        }
+        if (type == "accept"){
+            document.getElementById("msg-content").innerHTML= html + "<p>accept: "+msg+"</p>"
+        }
+    }
+
+    function wsclose(){
+        ws.close()
+        show("send", "关闭 链接")
+    }
+</script>
+</body>
+</html>
